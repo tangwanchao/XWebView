@@ -115,13 +115,20 @@ open class XWebView @JvmOverloads constructor(
         if (webState != null) {
             return webState
         }
-        val findOr = findWebState(rootView as? ViewGroup)
-        if (findOr != null) {
-            mWebState = findOr
-            findOr.mRetryListener = {
-                val failingUrl = getTag(R.id.failing_url) as String
-                setTag(R.id.failing_url, null)
-                loadUrl(failingUrl)
+        var parent = parent as? ViewGroup
+        var findOr: WebState? = null
+        val excludes = hashSetOf<ViewGroup>()
+        while (parent != null) {
+            findOr = findWebState(parent,excludes)
+            if (findOr != null) {
+                mWebState = findOr
+                findOr.mRetryListener = {
+                    val failingUrl = getTag(R.id.failing_url) as String
+                    setTag(R.id.failing_url, null)
+                    loadUrl(failingUrl)
+                }
+            }else{
+                parent = parent.parent as? ViewGroup
             }
         }
         return findOr
@@ -130,14 +137,19 @@ open class XWebView @JvmOverloads constructor(
     /**
      * 遍历查找当前布局中的 [WebState]
      */
-    private fun findWebState(parent: ViewGroup?): WebState? {
+    private fun findWebState(parent: ViewGroup?,excludes:HashSet<ViewGroup>): WebState? {
         if (parent == null) return null
+        excludes.add(parent)
+        // 同级查找
         for (child in parent.children) {
             if (child is WebState) {
                 return child
             }
-            if (child is ViewGroup) {
-                val findOr = findWebState(child)
+        }
+        // 子级查找
+        for(child in parent.children) {
+            if (child is ViewGroup && !excludes.contains(child)) {
+                val findOr = findWebState(child,excludes)
                 if (findOr != null) {
                     return findOr
                 }
