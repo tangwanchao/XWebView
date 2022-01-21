@@ -116,10 +116,9 @@ open class XWebView @JvmOverloads constructor(
             return webState
         }
         var parent = parent as? ViewGroup
-        var findOr: WebState? = null
         val excludes = hashSetOf<ViewGroup>()
         while (parent != null) {
-            findOr = findWebState(parent,excludes)
+            val findOr = findWebState(parent,excludes)
             if (findOr != null) {
                 mWebState = findOr
                 findOr.mRetryListener = {
@@ -127,11 +126,12 @@ open class XWebView @JvmOverloads constructor(
                     setTag(R.id.failing_url, null)
                     loadUrl(failingUrl)
                 }
+                return findOr
             }else{
                 parent = parent.parent as? ViewGroup
             }
         }
-        return findOr
+        return null
     }
 
     /**
