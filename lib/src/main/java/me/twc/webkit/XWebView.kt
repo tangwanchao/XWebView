@@ -6,7 +6,6 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
 import android.util.AttributeSet
-import android.util.Log
 import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -21,6 +20,23 @@ private fun Context.getLollipopFixWebView(): Context {
     return if (Build.VERSION.SDK_INT in 21..22) {
         createConfigurationContext(Configuration())
     } else this
+}
+
+/**
+ * 设置当前 WebView 处于异常状态
+ *
+ * @param failingUrl 加载异常的 url
+ */
+internal fun XWebView.setError(failingUrl:String?){
+    setTag(R.id.failing_url, failingUrl)
+}
+
+/**
+ * @return [true : 当前 WebView 处于异常状态]
+ *         [false: 其他情况]
+ */
+fun XWebView.isError():Boolean{
+    return getTag(R.id.failing_url) != null
 }
 
 /**
@@ -122,9 +138,8 @@ open class XWebView @JvmOverloads constructor(
             if (findOr != null) {
                 mWebState = findOr
                 findOr.mRetryListener = {
-                    val failingUrl = getTag(R.id.failing_url) as String
                     setTag(R.id.failing_url, null)
-                    loadUrl(failingUrl)
+                    reload()
                 }
                 return findOr
             }else{

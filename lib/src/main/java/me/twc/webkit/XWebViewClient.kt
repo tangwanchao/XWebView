@@ -2,6 +2,7 @@ package me.twc.webkit
 
 import android.os.Looper
 import android.webkit.*
+import androidx.core.view.isVisible
 
 /**
  * @author 唐万超
@@ -43,13 +44,13 @@ open class XWebViewClient : WebViewClient() {
         if (view is XWebView) {
             view.getWebState()?.let {
                 // 设置 tag 标记这次请求是失败的
-                view.setTag(R.id.failing_url, failingUrl)
+                view.setError(failingUrl)
                 if (Looper.getMainLooper() == Looper.myLooper()) {
-                    view.loadUrl("about:blank")
+                    view.isVisible = false
                     it.showError()
                 } else {
                     view.post {
-                        view.loadUrl("about:blank")
+                        view.isVisible = false
                         it.showError()
                     }
                 }

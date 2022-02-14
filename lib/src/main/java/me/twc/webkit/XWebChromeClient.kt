@@ -2,6 +2,7 @@ package me.twc.webkit
 
 import android.webkit.WebChromeClient
 import android.webkit.WebView
+import androidx.core.view.isVisible
 
 /**
  * @author 唐万超
@@ -17,8 +18,9 @@ open class XWebChromeClient : WebChromeClient() {
         if (view !is XWebView) return
 
         val webState = view.getWebState()
-        if(webState != null && view.getTag(R.id.failing_url) == null){
+        if(webState != null && !view.isError()){
             if(newProgress == 100){
+                view.isVisible = true
                 webState.showContent()
             }else{
                 webState.showLoading(newProgress)
