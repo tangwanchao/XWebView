@@ -51,55 +51,56 @@ open class XWebView @JvmOverloads constructor(
 ) : WebView(context.getLollipopFixWebView(), attr, defStyle) {
 
     init {
+        if(!isInEditMode) {
+            val settings = this.settings
+            // 禁用缩放
+            settings.setSupportZoom(false)
+            // 禁用悬浮在 WebView 上面的缩放控件
+            settings.builtInZoomControls = false
+            // 禁用显示缩放控件
+            settings.displayZoomControls = false
+            // 缩放页面到控件大小
+            settings.loadWithOverviewMode = true
+            // 启用视口支持
+            settings.useWideViewPort = true
+            // 是否支持多窗口
+            settings.setSupportMultipleWindows(false)
+            @Suppress("DEPRECATION")
+            // 启用 js
+            settings.javaScriptEnabled = true
+            // url 中的 js 无法访问其他 url
+            settings.allowFileAccessFromFileURLs = false
+            // 禁用 file:/// 中的 js 访问其他 file:///
+            settings.allowUniversalAccessFromFileURLs = false
+            // 应用缓存 api 可以使用
+            settings.setAppCacheEnabled(true)
+            // 设置缓存路径
+            settings.setAppCachePath(getContext().cacheDir.absolutePath + File.separator + "web")
+            // dom 储存 api 可用
+            settings.domStorageEnabled = true
+            // 允许定位
+            settings.setGeolocationEnabled(true)
+            // js 无法打开窗口
+            settings.javaScriptCanOpenWindowsAutomatically = false
+            // 无缓存
+            settings.cacheMode = WebSettings.LOAD_DEFAULT
+            // 允许从不安全来源加载资源
+            settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+            // 允许访问ContentUrl
+            settings.allowContentAccess = true
+            // 允许访问系统文件(file:///android_asset和file:///android_res始终可访问)
+            settings.allowFileAccess = true
+            // 数据库存储 api 可用
+            settings.databaseEnabled = true
+            // 文本缩放百分比
+            settings.textZoom = 100
 
-        val settings = this.settings
-        // 禁用缩放
-        settings.setSupportZoom(false)
-        // 禁用悬浮在 WebView 上面的缩放控件
-        settings.builtInZoomControls = false
-        // 禁用显示缩放控件
-        settings.displayZoomControls = false
-        // 缩放页面到控件大小
-        settings.loadWithOverviewMode = true
-        // 启用视口支持
-        settings.useWideViewPort = true
-        // 是否支持多窗口
-        settings.setSupportMultipleWindows(false)
-        @Suppress("DEPRECATION")
-        // 启用 js
-        settings.javaScriptEnabled = true
-        // url 中的 js 无法访问其他 url
-        settings.allowFileAccessFromFileURLs = false
-        // 禁用 file:/// 中的 js 访问其他 file:///
-        settings.allowUniversalAccessFromFileURLs = false
-        // 应用缓存 api 可以使用
-        settings.setAppCacheEnabled(true)
-        // 设置缓存路径
-        settings.setAppCachePath(getContext().cacheDir.absolutePath + File.separator + "web")
-        // dom 储存 api 可用
-        settings.domStorageEnabled = true
-        // 允许定位
-        settings.setGeolocationEnabled(true)
-        // js 无法打开窗口
-        settings.javaScriptCanOpenWindowsAutomatically = false
-        // 无缓存
-        settings.cacheMode = WebSettings.LOAD_DEFAULT
-        // 允许从不安全来源加载资源
-        settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-        // 允许访问ContentUrl
-        settings.allowContentAccess = true
-        // 允许访问系统文件(file:///android_asset和file:///android_res始终可访问)
-        settings.allowFileAccess = true
-        // 数据库存储 api 可用
-        settings.databaseEnabled = true
-        // 文本缩放百分比
-        settings.textZoom = 100
-
-        // 修复 5.x bug
-        // https://stackoverflow.com/questions/58028821/webview-crash-on-android-5-5-1-api-21-22-resourcesnotfoundexception-string-r
-        isFocusable = true
-        isFocusableInTouchMode = true
-        bindDefaultClient()
+            // 修复 5.x bug
+            // https://stackoverflow.com/questions/58028821/webview-crash-on-android-5-5-1-api-21-22-resourcesnotfoundexception-string-r
+            isFocusable = true
+            isFocusableInTouchMode = true
+            bindDefaultClient()
+        }
     }
 
     /**
